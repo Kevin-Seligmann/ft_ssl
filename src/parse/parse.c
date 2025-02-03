@@ -1,4 +1,8 @@
 #include "ft_ssl.h"
+#include "ft_parse.h"
+#include "ft_encryption.h"
+#include "ft_hash.h"
+#include "ft_encoding.h"
 
 static struct s_command_info commands[] = 
 {

@@ -30,7 +30,7 @@ static int get_random_salt(struct s_encryption *data)
 		return FT_SSL_FATAL_ERR;
 	}
 	salt_buffer[DES_SALT_LENGTH] = 0;
-	ft_memcpy(data->ksiv_buffer + data->key_length, read_bytes, DES_SALT_LENGTH);
+	ft_memcpy(data->ksiv_buffer + data->key_length, salt_buffer, DES_SALT_LENGTH);
 	return FT_SSL_SUCCESS;
 }
  

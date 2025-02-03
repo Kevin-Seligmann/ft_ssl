@@ -1,9 +1,12 @@
 #include "ft_ssl.h"
 #include "ft_parse.h"
+#include "ft_encryption.h"
+#include "ft_hash.h"
+#include "ft_encoding.h"
 
 // Flag char, flag value, compatible commands, action.
 //  struct s_flag_option {
-// 	char opt;
+// 	char *opt;
 // 	int flag;
 // 	int compatible_commands;
 //	int needs_argument

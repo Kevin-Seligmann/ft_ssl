@@ -4,11 +4,39 @@
 
 # define BITS_TO_BYTES(x) ((x) / 8)
 
+// Hash command flags
+# define HASH_FLAG_APPEND 0x01
+# define HASH_FLAG_QUIET 0x02
+# define HASH_FLAG_REVERSE 0x04
+# define HASH_FLAG_STRING_INPUT 0x08
+# define HASH_FLAG_FILE_INPUT 0x10
+# define HASH_FLAG_STDIN_INPUT 0x20
+
 # define ALGFAM_MD5 1
 # define ALGFAM_WHIRLPOOL 2
 # define ALGFAM_SHA256 3
 # define ALGFAM_SHA512 4
 
+// Algorithms
+# define HASH_ALG_MD5 0x01
+# define HASH_ALG_SHA224 0x02
+# define HASH_ALG_SHA256 0x04
+# define HASH_ALG_SHA384 0x08
+# define HASH_ALG_SHA512 0x10
+# define HASH_ALG_SHA512_224 0x20
+# define HASH_ALG_SHA512_256 0x40
+# define HASH_ALG_WHIRLPOOL 0x80
+
+// Printing function need this
+# define HASH_PRINT_TYPE_STRING 0x01
+# define HASH_PRINT_TYPE_STDIN 0x02
+# define HASH_PRINT_TYPE_FILE 0x04
+# define PRINT_PARENTHESIS 0x01
+# define PRINT_QUOTES 0x02
+# define PRINT_TRAILING_NL 0x04
+
+
+// Generic hash
 struct hash_alg_data {
 	int algorithm_family;
 	uint8_t *msg; // Original message
@@ -24,6 +52,7 @@ struct hash_alg_data {
 
 void print_command_result(struct s_command *command, uint8_t *digest, char *src, int print_type);
 
+// Proprocess
 int preprocess_sha2(struct hash_alg_data *alg);
 int preprocess_md5(struct hash_alg_data *alg);
 int preprocess_whirlpool(struct hash_alg_data *alg);
@@ -43,5 +72,16 @@ uint64_t sum_512_0(uint64_t x);
 uint64_t sum_512_1(uint64_t x);
 uint64_t sigma_512_0(uint64_t x);
 uint64_t sigma_512_1(uint64_t x);
+
+// Hashes functions
+int hash_command(struct s_command *command, int ind, char **argv);
+int hash_md5(void *data);
+int hash_sha224(void *data);
+int hash_sha256(void *data);
+int hash_sha384(void *data);
+int hash_sha512(void *data);
+int hash_sha512_224(void *data);
+int hash_sha512_256(void *data);
+int hash_whirlpool(void *data);
 
 #endif
