@@ -4,14 +4,6 @@
 
 # define BITS_TO_BYTES(x) ((x) / 8)
 
-// Hash command flags
-# define HASH_FLAG_APPEND 0x01
-# define HASH_FLAG_QUIET 0x02
-# define HASH_FLAG_REVERSE 0x04
-# define HASH_FLAG_STRING_INPUT 0x08
-# define HASH_FLAG_FILE_INPUT 0x10
-# define HASH_FLAG_STDIN_INPUT 0x20
-
 # define ALGFAM_MD5 1
 # define ALGFAM_WHIRLPOOL 2
 # define ALGFAM_SHA256 3

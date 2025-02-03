@@ -2,17 +2,6 @@
 
 # define FT_ENCRYPTION_H
 
-// Encryption command flags.
-# define FLAG_INPUTFILE 0x01
-# define FLAG_OUTPUTFILE 0x02
-# define FLAG_ENCODE 0x04
-# define FLAG_DECODE 0x08
-# define FLAG_BASE64_ENCRYPTION 0x10
-# define FLAG_FLAG_KEY 0x20
-# define FLAG_PASSWORD 0x40
-# define FLAG_SALT 0x80 
-# define FLAG_VECTOR 0x100
-
 // Algorithms
 # define SIM_ENC_ALG_DES_ECB 0x1
 # define SIM_ENC_ALG_DES_CBC 0x2

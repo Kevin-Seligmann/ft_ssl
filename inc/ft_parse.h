@@ -18,5 +18,11 @@ int get_crypt_key_argument(struct s_command *command, int *ind, char **argv);
 int get_crypt_pass_argument(struct s_command *command, int *ind, char **argv);
 int get_crypt_vector_argument(struct s_command *command, int *ind, char **argv);
 int get_crypt_salt_argument(struct s_command *command, int *ind, char **argv);
+int get_inform_argument(struct s_command *command, int *ind, char **argv);
+int get_outform_argument(struct s_command *command, int *ind, char **argv);
+int get_passin_argument(struct s_command *command, int *ind, char **argv);
+int get_passout_argument(struct s_command *command, int *ind, char **argv);
+int get_keysize_argument(struct s_command *command, int *ind, char **argv);
+int get_algo_argument(struct s_command *command, int *ind, char **argv);
 
 #endif

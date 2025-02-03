@@ -46,6 +46,66 @@ static struct s_flag_option crypt_options[] =
 	{0, 0, 0, 0, NULL, NULL},
 };
 
+static struct s_flag_option genrsa_options[] = 
+{
+	{"out", FLAG_OUTPUTFILE, COMM_TYPE_GENRSA, 1, get_output_file_argument, "Output file"},
+	{0, 0, 0, 0, NULL, NULL},
+};
+
+static struct s_flag_option rsa_options[] = 
+{
+	{"inform", FLAG_INFORM, COMM_TYPE_RSA, 1, get_inform_argument, ""},
+	{"outform", FLAG_OUTFORM, COMM_TYPE_RSA, 1, get_outform_argument, ""},
+	{"in", FLAG_INPUTFILE, COMM_TYPE_RSA, 1, get_input_file_argument, ""},
+	{"passin", FLAG_PASSIN, COMM_TYPE_RSA, 1, get_passin_argument, ""},
+	{"out", FLAG_OUTPUTFILE, COMM_TYPE_RSA, 1, get_output_file_argument, ""},
+	{"passout", FLAG_PASSOUT, COMM_TYPE_RSA, 1, get_passout_argument, ""},
+	{"des", FLAG_DES, COMM_TYPE_RSA, 0, 0, ""},
+	{"text", FLAG_TEXT, COMM_TYPE_RSA, 0, 0, ""},
+	{"noout", FLAG_NOOUT, COMM_TYPE_RSA, 0, 0, ""},
+	{"modulus", FLAG_MODULUS, COMM_TYPE_RSA, 0, 0, ""},
+	{"check", FLAG_CHECK, COMM_TYPE_RSA, 0, 0, ""},
+	{"pubin", FLAG_PUBIN, COMM_TYPE_RSA, 0, 0, ""},
+	{"pubout", FLAG_POBOUT, COMM_TYPE_RSA, 0, 0, ""},
+	{0, 0, 0, 0, NULL, NULL},
+};
+
+static struct s_flag_option rsautl_options[] = 
+{
+	{"in", FLAG_INPUTFILE, COMM_TYPE_RSAUTL, 1, get_input_file_argument, ""},
+	{"out", FLAG_OUTPUTFILE, COMM_TYPE_RSAUTL, 1, get_output_file_argument, ""},
+	{"inkey", FLAG_FLAG_KEY, COMM_TYPE_RSAUTL, 1, get_crypt_key_argument, ""},
+	{"pubin", FLAG_PUBIN, COMM_TYPE_RSAUTL, 0, 0, ""},
+	{"encrypt", FLAG_ENCODE, COMM_TYPE_RSAUTL, 0, 0, ""},
+	{"decrypt", FLAG_DECODE, COMM_TYPE_RSAUTL, 0, 0, ""},
+	{"hexdump", FLAG_HEXDUMP, COMM_TYPE_RSAUTL, 0, 0, ""},
+	{0, 0, 0, 0, NULL, NULL},
+};
+
+static struct s_flag_option gendsa_options[] = 
+{
+	{"out", FLAG_OUTPUTFILE, COMM_TYPE_GENDSA, 1, get_output_file_argument, ""},
+	{"passout", FLAG_PASSOUT, COMM_TYPE_GENDSA, 1, get_passout_argument, ""},
+	{"gendes", FLAG_GENDES, COMM_TYPE_GENDSA, 0, 0, ""},
+	{0, 0, 0, 0, NULL, NULL},
+};
+
+static struct s_flag_option breakit_options[] = 
+{
+	{"k", FLAG_KEYSIZE, COMM_TYPE_BREAKIT, 1, get_keysize_argument, ""},
+	{"a", FLAG_ALGO, COMM_TYPE_BREAKIT, 1, get_algo_argument, ""},
+	{"p", FLAG_PLAINTEXT, COMM_TYPE_BREAKIT, 0, 0, ""},
+	{0, 0, 0, 0, NULL, NULL},
+};
+
+static struct s_flag_option extractkey_options[] = 
+{
+	{"k", FLAG_KEYSIZE, COMM_TYPE_EXTRACTKEY, 1, get_keysize_argument, ""},
+	{"a", FLAG_ALGO, COMM_TYPE_EXTRACTKEY, 1, get_algo_argument, ""},
+	{"p", FLAG_PLAINTEXT, COMM_TYPE_EXTRACTKEY, 0, 0, ""},
+	{0, 0, 0, 0, NULL, NULL},
+};
+
 static int is_flag(char *s)
 {
 	return (s && s[0] == '-' && s[1]);
@@ -69,6 +129,12 @@ static void get_options_data(struct s_command *command, struct s_flag_option **o
 		case COMM_TYPE_HASH: *options = hash_options; break;
 		case COMM_TYPE_ENCODING: *options = encoding_options; break ;
 		case COMM_TYPE_ENCRYPT: *options = crypt_options; break ;
+		case COMM_TYPE_RSA: *options = rsa_options; break;
+		case COMM_TYPE_GENRSA: *options = genrsa_options; break;
+		case COMM_TYPE_RSAUTL: *options = rsautl_options; break;
+		case COMM_TYPE_GENDSA: *options = gendsa_options; break;
+		case COMM_TYPE_BREAKIT: *options = breakit_options; break;
+		case COMM_TYPE_EXTRACTKEY: *options = extractkey_options; break;
 	}
 }
 

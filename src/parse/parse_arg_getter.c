@@ -82,3 +82,10 @@ int get_crypt_salt_argument(struct s_command *command, int *ind, char **argv)
 	argument = get_str_argument(command, ind, argv);
 	return set_argument(argument, &command->salt);
 }
+
+int get_inform_argument(struct s_command *command, int *ind, char **argv){return FT_SSL_FATAL_ERR;}
+int get_outform_argument(struct s_command *command, int *ind, char **argv){return FT_SSL_FATAL_ERR;}
+int get_passin_argument(struct s_command *command, int *ind, char **argv){return FT_SSL_FATAL_ERR;}
+int get_passout_argument(struct s_command *command, int *ind, char **argv){return FT_SSL_FATAL_ERR;}
+int get_keysize_argument(struct s_command *command, int *ind, char **argv){return FT_SSL_FATAL_ERR;}
+int get_algo_argument(struct s_command *command, int *ind, char **argv){return FT_SSL_FATAL_ERR;}

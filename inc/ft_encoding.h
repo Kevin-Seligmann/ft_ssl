@@ -10,12 +10,6 @@ struct s_encoding {
 	size_t output_size;
 };
 
-// Encoding command flags
-# define FLAG_INPUTFILE 0x01
-# define FLAG_OUTPUTFILE 0x02
-# define FLAG_ENCODE 0x04
-# define FLAG_DECODE 0x08
-
 // Types of encoding algorithms
 # define ENC_ALG_BASE64 0x01
 # define DEC_ALG_BASE64 0x02

@@ -16,6 +16,57 @@
 # define COMM_TYPE_HASH 0x01
 # define COMM_TYPE_ENCODING 0x02
 # define COMM_TYPE_ENCRYPT 0x04
+# define COMM_TYPE_GENRSA 0x08
+# define COMM_TYPE_RSA 0x10
+# define COMM_TYPE_RSAUTL 0x20
+# define COMM_TYPE_GENDSA 0x40
+# define COMM_TYPE_BREAKIT 0x80
+# define COMM_TYPE_EXTRACTKEY 0x100
+
+// Shared flags
+# define FLAG_INPUTFILE 0x01
+# define FLAG_OUTPUTFILE 0x02
+# define FLAG_ENCODE 0x04
+# define FLAG_DECODE 0x08
+# define FLAG_FLAG_KEY 0x10
+# define FLAG_PUBIN 0x20
+# define FLAG_PASSOUT 0x40
+
+// Encryption command flags.
+# define FLAG_BASE64_ENCRYPTION 0x20
+# define FLAG_PASSWORD 0x40
+# define FLAG_SALT 0x80 
+# define FLAG_VECTOR 0x100
+
+// Hash command flags
+# define HASH_FLAG_APPEND 0x01
+# define HASH_FLAG_QUIET 0x02
+# define HASH_FLAG_REVERSE 0x04
+# define HASH_FLAG_STRING_INPUT 0x08
+# define HASH_FLAG_FILE_INPUT 0x10
+# define HASH_FLAG_STDIN_INPUT 0x20
+
+// rsa flags
+# define FLAG_INFORM 0x80
+# define FLAG_OUTFORM 0x100
+# define FLAG_PASSIN 0x200
+# define FLAG_DES 0x400
+# define FLAG_TEXT 0x800
+# define FLAG_NOOUT 0x1000
+# define FLAG_MODULUS 0x2000
+# define FLAG_CHECK 0x4000
+# define FLAG_POBOUT 0x8000
+
+// rsautl flags
+# define FLAG_HEXDUMP 0x1
+
+// gendsa flags
+# define FLAG_GENDES 0x1
+
+// Breakit/extractkey flags
+# define FLAG_KEYSIZE 0x1
+# define FLAG_ALGO 0x2
+# define FLAG_PLAINTEXT 0x4
 
 // Errors
 # define FT_SSL_SUCCESS 0
