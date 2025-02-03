@@ -1,0 +1,7 @@
+*.o
+*d
+*.txt
+ft_ssl
+.vscode/*
+.vscode
+
