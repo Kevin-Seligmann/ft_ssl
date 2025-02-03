@@ -1,4 +1,5 @@
-VPATH = src src/utils src/hash src/encryption src/encoding src/parse src/encryption/algorithms
+VPATH = src src/utils src/hash src/encryption src/encoding src/parse src/encryption/algorithms \
+	src/asym/extractkey src/asym/gendsa src/asym/genrsa src/asym/rsa src/asym/rsautl src/asym/breakit
 
 OBJ_MAIN =  main.o parse.o write_errors.o parse_flags.o parse_arg_getter.o
 
@@ -15,8 +16,10 @@ OBJ_CRYPT = encrypt_getkey.o encrypt_getsalt.o encrypt_main.o encrypt_utils.o en
 			encrypt_base64.o encrypt_getiv.o des_ecb.o des_block_cipher.o key_schedule.o \
 			encrypt_output.o
 
+OBJ_ASYM = breakit_main.o extractkey_main.o gendsa_main.o genrsa_main.o rsa_main.o rsautl_main.o 
+
 # Files
-OBJ = $(OBJ_MAIN) $(OBJ_LIB) $(OBJ_HASH) $(OBJ_ENCODING) $(OBJ_CRYPT)
+OBJ = $(OBJ_MAIN) $(OBJ_LIB) $(OBJ_HASH) $(OBJ_ENCODING) $(OBJ_CRYPT) $(OBJ_ASYM)
 
 # Target
 NAME = ft_ssl

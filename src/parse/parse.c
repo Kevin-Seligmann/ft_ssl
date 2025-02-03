@@ -3,6 +3,7 @@
 #include "ft_encryption.h"
 #include "ft_hash.h"
 #include "ft_encoding.h"
+#include "ft_asym.h"
 
 static struct s_command_info commands[] = 
 {
@@ -36,6 +37,12 @@ static struct s_command_info commands[] =
 	{"DES-EDE3-CFB", COMM_TYPE_ENCRYPT, encryption_command, SIM_ENC_ALG_DES_EDE3_CFB, des_ede3_cfb_command},
 	{"DES-EDE3-OFB", COMM_TYPE_ENCRYPT, encryption_command, SIM_ENC_ALG_DES_EDE3_OFB, des_ede3_ctr_command},
 	{"DES-EDE3-CTR", COMM_TYPE_ENCRYPT, encryption_command, SIM_ENC_ALG_DES_EDE3_CTR, des_ede3_ctr_command},
+	{"RSAUTL", COMM_TYPE_RSAUTL, rsautl_command, 0, 0},
+	{"RSA", COMM_TYPE_RSA, rsa_command, 0, 0},
+	{"GENRSA", COMM_TYPE_GENRSA, genrsa_command, 0, 0},
+	{"GENDSA", COMM_TYPE_GENDSA, gendsa_command, 0, 0},
+	{"BREAKIT", COMM_TYPE_BREAKIT, breakit_command, 0, 0},
+	{"EXTRACTKEY", COMM_TYPE_EXTRACTKEY, extractkey_command, 0, 0},
 	{NULL, 0, NULL, 0, NULL}
 };
 
