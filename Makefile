@@ -16,7 +16,8 @@ OBJ_CRYPT = encrypt_getkey.o encrypt_getsalt.o encrypt_main.o encrypt_utils.o en
 			encrypt_base64.o encrypt_getiv.o des_ecb.o des_block_cipher.o key_schedule.o \
 			encrypt_output.o
 
-OBJ_ASYM = breakit_main.o extractkey_main.o gendsa_main.o genrsa_main.o rsa_main.o rsautl_main.o 
+OBJ_ASYM = breakit_main.o extractkey_main.o gendsa_main.o genrsa_main.o rsa_main.o rsautl_main.o \
+			genrsa_prime.o
 
 # Files
 OBJ = $(OBJ_MAIN) $(OBJ_LIB) $(OBJ_HASH) $(OBJ_ENCODING) $(OBJ_CRYPT) $(OBJ_ASYM)
