@@ -1,24 +1,6 @@
 #include "ft_ssl.h"
 #include "ft_asym.h"
 
-struct s_private_key {
-	uint64_t version;
-	uint64_t modulus;
-	uint64_t public_exponent;
-	uint64_t private_exponent;
-	uint32_t prime_1;
-	uint32_t prime_2;
-	uint64_t exponent_1;
-	uint64_t exponent_2;
-	uint64_t coefficient;
-};
-
-struct s_genrsa_command {
-	struct s_private_key pkey;
-	int fd_rand;
-	int fd_out;
-};
-
 static int initialize_command(struct s_command *command, struct s_genrsa_command *genrsa)
 {
 	genrsa->fd_rand = open("/dev/urandom", O_RDONLY);
@@ -49,107 +31,56 @@ static int exit_command(struct s_genrsa_command *genrsa, int ret)
 	return ret;
 }
 
-static uint64_t gcd(uint64_t a, uint64_t b)
-{
-	uint64_t t;
-
-	while (b != 0)
-	{
-		t = b;
-		b = a % b;
-		a = t;
-	}
-	return a;
-}
-
-
-// Calcs. y = a^-1 mod n. (Calcs. inverse of a mod n) 
-static uint64_t get_inverse(uint64_t a, uint64_t n)
-{
-	int64_t quotient;
-	int64_t aux;
-	int64_t t;
-	int64_t r;
-	int64_t new_r;
-	int64_t new_t;
-
-	t = 0;
-	r = (int64_t) n;
-	new_t = 1;
-	new_r = (int64_t) a;
-	while (new_r != 0)
-	{
-		quotient = r / new_r;
-
-		aux = new_t;
-		new_t = t - quotient * aux;
-		t = aux;
-
-		aux = new_r;
-		new_r = r - quotient * aux;
-		r = aux;
-	}
-	if (r > 1)
-		return 0;
-	if (t < 0)
-		t += n;
-	return t;
-}
-
-static void gen_private_exponent(struct s_private_key *pkey)
-{
-	uint64_t lambda;
-
-	lambda = ((uint64_t) (pkey->prime_1 - 1) * (uint64_t) (pkey->prime_2 - 1)) / gcd(pkey->prime_1 - 1, pkey->prime_2 - 1);
-	pkey->private_exponent = get_inverse(pkey->public_exponent, lambda);
-}
-
 static int generate_rsa_pkey(struct s_private_key *pkey, int rand_fd)
 {
-	if (gen_prime_32b(&(pkey->prime_1), rand_fd) == FT_SSL_FATAL_ERR)
-		return FT_SSL_FATAL_ERR;
-	if (gen_prime_32b(&(pkey->prime_2), rand_fd) == FT_SSL_FATAL_ERR)
-		return FT_SSL_FATAL_ERR;
+	BIGNUM *prime1_minus_one;
+	BIGNUM *prime2_minus_one;
+	BIGNUM *gcd_res;
+	BIGNUM *lambda;
+	BN_CTX *ctx;
+	
+	
+	// Init.
 	pkey->version = 0;
-	pkey->modulus = ((uint64_t) pkey->prime_1) * ((uint64_t) pkey->prime_2);
-	pkey->public_exponent = GENRSA_PUBLIC_EXPONENT;
-	gen_private_exponent(pkey);
-	if (pkey->private_exponent == 0)
-	{
-		write_error("Error generating private exponent");
+	pkey->modulus = BN_new();
+	pkey->public_exponent = BN_new();
+	lambda = BN_new();
+	gcd_res = BN_new();
+	pkey->private_exponent = BN_new();
+	pkey->exponent_1 = BN_new();
+	pkey->exponent_2 = BN_new();
+	ctx = BN_CTX_new();
+
+	// Gen prime 1.
+	if (gen_prime(&(pkey->prime_1), rand_fd) == FT_SSL_FATAL_ERR)
 		return FT_SSL_FATAL_ERR;
-	}
-	pkey->exponent_1 = pkey->private_exponent % (pkey->prime_1 - 1);
-	pkey->exponent_2 = pkey->private_exponent % (pkey->prime_2 - 1);
-	pkey->coefficient = get_inverse(pkey->prime_2, pkey->prime_1);
+	prime1_minus_one = BN_dup(pkey->prime_1);
+	BN_sub_word(prime1_minus_one, 1);
+
+	// Gen prime 2.
+	if (gen_prime(&(pkey->prime_2), rand_fd) == FT_SSL_FATAL_ERR)
+		return FT_SSL_FATAL_ERR;
+	prime2_minus_one = BN_dup(pkey->prime_2);
+	BN_sub_word(prime2_minus_one, 1);
+
+	// Set modulus
+	BN_mul(pkey->modulus, pkey->prime_1, pkey->prime_2, ctx);
+
+	// Set public exponent
+	BN_set_word(pkey->public_exponent, GENRSA_PUBLIC_EXPONENT);
+
+	// Set private exponent
+	BN_mul(lambda, prime1_minus_one, prime2_minus_one, ctx);
+	BN_gcd(gcd_res, prime1_minus_one, prime2_minus_one, ctx);
+	BN_div(lambda, NULL, lambda, gcd_res, ctx);
+	BN_mod_inverse(pkey->private_exponent, pkey->public_exponent, lambda, ctx);
+
+	// Set CRT exponents and coefficient
+	BN_mod(pkey->exponent_1, pkey->private_exponent, prime1_minus_one, ctx);
+	BN_mod(pkey->exponent_2, pkey->private_exponent, prime2_minus_one, ctx);
+	BN_mod_inverse(pkey->coefficient, pkey->prime_2, pkey->prime_1, ctx);
+
 	return FT_SSL_SUCCESS;
-}
-
-static void private_key_integrity_test(struct s_private_key *pkey)
-{
-	uint64_t lambda = ((uint64_t) (pkey->prime_1 - 1) * (uint64_t) (pkey->prime_2 - 1)) / gcd(pkey->prime_1 - 1, pkey->prime_2 - 1);
-
-	if (((uint64_t) pkey->prime_1 * (uint64_t) pkey->prime_2 != pkey->modulus) \
-	|| ((((__uint128_t)pkey->public_exponent * (__uint128_t)pkey->private_exponent)) % lambda) != 1 \
-	|| (pkey->prime_2 * pkey->coefficient % pkey->prime_1) != 1){
-		printf("Error: P %u  Q %u  P*Q %lu EXP1 %lu EXP2 %lu D %lu E %lu COEF %lu LDA %lu GCD(p-1,q-1) %lu\n", 
-		pkey->prime_1, 
-		pkey->prime_2, 
-		pkey->modulus, 
-		pkey->exponent_1, 
-		pkey->exponent_2, 
-		pkey->private_exponent,
-		pkey->public_exponent,
-		pkey->coefficient,
-		lambda,
-		gcd(pkey->prime_1 - 1, pkey->prime_2 - 1));
-		printf("GCD(e, lambda_n) = %lu\n", gcd(pkey->public_exponent, lambda));
-		printf("GCD(e, lambda_n) = %lu\n", gcd(pkey->public_exponent, lambda));
-		printf("e * d mod lambda = %lu\n", (uint64_t) ((((__uint128_t)pkey->public_exponent * (__uint128_t)pkey->private_exponent)) % lambda));
-		printf("q * coef mod p = %lu\n", (uint64_t) ((((__uint128_t)pkey->prime_2 * (__uint128_t)pkey->coefficient)) % pkey->prime_1));
-	}
-	else
-		printf("Ok\n");
 }
 
 int genrsa_command(struct s_command *command, int ind, char **argv)
@@ -160,6 +91,7 @@ int genrsa_command(struct s_command *command, int ind, char **argv)
 		return exit_command(&genrsa, FT_SSL_FATAL_ERR);
 	if (generate_rsa_pkey(&genrsa.pkey, genrsa.fd_rand) == FT_SSL_FATAL_ERR)
 		return exit_command(&genrsa, FT_SSL_FATAL_ERR);
-	// private_key_integrity_test(&genrsa.pkey);
-	return FT_SSL_SUCCESS;
+	// if (output_private_key(&genrsa) == FT_SSL_FATAL_ERR)
+	// 	return exit_command(&genrsa, FT_SSL_FATAL_ERR);
+	return exit_command(&genrsa, FT_SSL_SUCCESS);
 }

@@ -17,7 +17,7 @@ OBJ_CRYPT = encrypt_getkey.o encrypt_getsalt.o encrypt_main.o encrypt_utils.o en
 			encrypt_output.o
 
 OBJ_ASYM = breakit_main.o extractkey_main.o gendsa_main.o genrsa_main.o rsa_main.o rsautl_main.o \
-			genrsa_prime.o
+			genrsa_prime.o genrsa_output.o
 
 # Files
 OBJ = $(OBJ_MAIN) $(OBJ_LIB) $(OBJ_HASH) $(OBJ_ENCODING) $(OBJ_CRYPT) $(OBJ_ASYM)
@@ -55,7 +55,7 @@ NO_COLOR = "\e[0m"
 all: $(OBJ_DIR) $(NAME)
 
 $(NAME): $(OBJ_PATH) Makefile
-	@$(CC) $(FLAGS) $(OBJ_PATH) -o $(NAME) -lm
+	@$(CC) $(FLAGS) $(OBJ_PATH) -o $(NAME) -lm -lcrypto -lssl
 	@echo $(YELLOW)$(PROJ) - Creating exec:$(NO_COLOR) $(NAME)
 
 # Compilation
