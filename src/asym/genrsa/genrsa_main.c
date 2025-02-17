@@ -91,7 +91,7 @@ int genrsa_command(struct s_command *command, int ind, char **argv)
 		return exit_command(&genrsa, FT_SSL_FATAL_ERR);
 	if (generate_rsa_pkey(&genrsa.pkey, genrsa.fd_rand) == FT_SSL_FATAL_ERR)
 		return exit_command(&genrsa, FT_SSL_FATAL_ERR);
-	// if (output_private_key(&genrsa) == FT_SSL_FATAL_ERR)
-	// 	return exit_command(&genrsa, FT_SSL_FATAL_ERR);
+	if (output_private_key(&genrsa) == FT_SSL_FATAL_ERR)
+		return exit_command(&genrsa, FT_SSL_FATAL_ERR);
 	return exit_command(&genrsa, FT_SSL_SUCCESS);
 }
