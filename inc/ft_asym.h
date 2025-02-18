@@ -13,13 +13,6 @@
 
 # define ENCODE_RSA_PRIV_KEY 1
 
-struct der_encoding {
-	int operation;
-	void *data;
-	uint8_t *enc_result;
-	uint64_t enc_result_length;
-};
-
 struct s_private_key {
 	int version;
 	BIGNUM *modulus;
@@ -46,8 +39,6 @@ int breakit_command(struct s_command *command, int ind, char **argv);
 int extractkey_command(struct s_command *command, int ind, char **argv);
 
 int gen_prime(BIGNUM **prime, int rand_fd);
-int output_private_key(struct s_genrsa_command *genrsa);
-int der_encoding(struct der_encoding *data);
 int output_private_key(struct s_genrsa_command *genrsa);
 
 #endif

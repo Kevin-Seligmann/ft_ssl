@@ -2,6 +2,13 @@
 #include "ft_asym.h"
 #include "ft_encoding.h"
 
+struct integer_sequence 
+{
+	size_t size;
+	uint8_t *str;
+};
+
+
 /*
 	PKCS #8. Encoding. https://datatracker.ietf.org/doc/html/rfc5208
 
@@ -58,32 +65,16 @@
 
 */
 
+int get_pk_sequence(struct s_genrsa_command *genrsa)
+{
+	return FT_SSL_SUCCESS;
+}
+
 int output_private_key(struct s_genrsa_command *genrsa)
 {
-	return 0;
-	// struct der_encoding der_encoding_data;
-	// struct s_encoding base64_encoding_data;
+	struct integer_sequence private_key_sequence;
 
-	// der_encoding_data.operation = ENCODE_RSA;
-	// der_encoding_data.data = &genrsa->pkey;
-	// if (der_encoding(&der_encoding) == FT_SSL_FATAL_ERR)
-	// 	return FT_SSL_FATAL_ERR;
-
-	// base64_encoding_data.input = (char *) der_encoding_data.enc_result;
-	// base64_encoding_data.input_size = der_encoding_data.enc_result_length;
-	// encoding_base64(&base64_encoding_data);
-	// if (base64_encoding_data.output == NULL)
-	// {
-	// 	free(der_encoding_data.enc_result);
-	// 	write_error("error encoding private key on base64");
-	// 	return FT_SSL_FATAL_ERR;
-	// }
-
-	// ft_putstr_fd("-----BEGIN PRIVATE KEY-----\n", genrsa->fd_out);
-	// ft_putstr_fd(base64_encoding_data.output, genrsa->fd_out);
-	// ft_putstr_fd("\n-----END PRIVATE KEY-----\n", genrsa->fd_out);
-
-	// free(base64_encoding_data.output);
-	// free(der_encoding_data.enc_result);
-	// return FT_SSL_SUCCESS;	
+	if (get_pk_sequence(genrsa, &private_key_sequence) == FT_SSL_FATAL_ERR)
+		return FT_SSL_FATAL_ERR;
+	return FT_SSL_SUCCESS;	
 }
