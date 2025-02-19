@@ -21,6 +21,17 @@ struct integer_octet_string
 	struct der_integer *integers;	
 };
 
+struct algorithm_identifier 
+{
+	uint32_t octet_qty;
+	uint8_t *data;
+};
+
+struct der_private_key {
+	struct der_integer version;
+	struct algorithm_identifier algorithm_identifier;
+	struct integer_octet_string private_key;
+};
 
 int encode_length_short_form(uint32_t octet_qty, struct der_length *length)
 {
@@ -53,6 +64,7 @@ int encode_length_long_form(uint32_t octet_qty, struct der_length *length)
 		length->octets[3] = octet_qty_buffer[2];
 	if (length->octets_qty == 4)
 		length->octets[4] = octet_qty_buffer[3];
+	return FT_SSL_SUCCESS;
 }
 
 int encode_length(uint32_t octet_qty, struct der_length *length)
@@ -94,20 +106,7 @@ int encode_integer_from_small_int(uint8_t src, struct der_integer *integer)
 	return FT_SSL_SUCCESS;
 }
 
-struct s_private_key {
-	int version;
-	BIGNUM *modulus;
-	BIGNUM *public_exponent;
-	BIGNUM *private_exponent;
-	BIGNUM *prime_1;
-	BIGNUM *prime_2;
-	BIGNUM *exponent_1;
-	BIGNUM *exponent_2;
-	BIGNUM *coefficient;
-};
-
-
-int encode_pkey_integer_sequence(struct integer_octet_string *sequence, struct s_private_key *key)
+int encode_pkey_integer_octetstring(struct integer_octet_string *sequence, struct s_private_key *key)
 {
 	sequence->integer_qty = 9; // Private keys hold 9 integers.
 	sequence->integers = malloc(9 * sizeof(* (sequence->integers)));
@@ -129,4 +128,69 @@ int encode_pkey_integer_sequence(struct integer_octet_string *sequence, struct s
 	}
 
 	encode_length(sequence->integers_octet_length, &sequence->length);
+
+	return FT_SSL_SUCCESS;
+}
+
+int encode_rsa_identifier_sequence(struct algorithm_identifier *sequence)
+{
+    uint8_t oid[] = { 0x06, 0x05, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01 }; // OID bytes for RSA
+    uint8_t parameters[] = { 0x05, 0x00 }; // NULL
+
+	sequence->octet_qty = sizeof(oid) + sizeof(parameters);
+	sequence->data = malloc(sequence->octet_qty);
+
+	sequence->data[0] = oid[0];
+	sequence->data[1] = oid[1];
+	sequence->data[2] = oid[2];
+	sequence->data[3] = oid[3];
+	sequence->data[4] = oid[4];
+	sequence->data[5] = oid[5];
+	sequence->data[6] = oid[6];
+	sequence->data[7] = oid[7];
+	sequence->data[8] = oid[8];
+	sequence->data[9] = oid[9];
+	sequence->data[10] = oid[10];
+
+	sequence->data[11] = parameters[0];
+	sequence->data[12] = parameters[1];
+
+	return FT_SSL_SUCCESS;
+}
+
+int encode_rsa_private_key(uint32_t *size, uint8_t **dst, struct s_private_key *key)
+{
+	struct der_length length; 
+	struct der_private_key der_pkey;
+	uint8_t *str;
+
+	encode_integer_from_small_int(0, &der_pkey.version);
+	encode_rsa_identifier_sequence(&der_pkey.algorithm_identifier);
+	encode_pkey_integer_octetstring(&der_pkey.private_key, key);
+
+	*size = 3;  // Version tag, length, octet
+	*size += der_pkey.algorithm_identifier.octet_qty + 1; // Octets + tag.
+	*size += der_pkey.private_key.integers_octet_length + 1; // Integers length + tag
+
+	encode_length(*size, &length);
+	*size += 1 + length.octets_qty; // Sequence tag. Sequence length.
+
+	str = malloc(*size);
+	*dst = str;
+
+	// Main sequence
+	*str = 01; // Sequence tag
+	str ++;
+	str += copy_length_in_buffer(str, &length);
+
+	// Version
+	str += copy_integer_in_buffer(str, &der_pkey.version);
+
+	// Algorithm identifier
+	memcpy(str, &der_pkey.algorithm_identifier.data, der_pkey.algorithm_identifier.octet_qty);
+	str += der_pkey.algorithm_identifier.octet_qty;
+	
+	// Integers
+
+	return FT_SSL_SUCCESS;
 }

@@ -49,7 +49,6 @@ struct integer_sequence
 	otherPrimesInfos is ignored.
 
 
-
 	x.509 Private Key Algorithm Identifier. https://datatracker.ietf.org/doc/html/rfc5280
    AlgorithmIdentifier  ::=  SEQUENCE  {
         algorithm               OBJECT IDENTIFIER,
