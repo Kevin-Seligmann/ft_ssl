@@ -1,13 +1,56 @@
 #include "ft_ssl.h"
 #include "ft_asym.h"
 
-# define DER_INTEGER 0x02
-# define DER_OCTETSTRING 0x04
-# define DER_SEQUENCE 0x30
-# define DER_NULL 0x05
-# define DER_OID 0x06
+/* RSA ENCRYPTION
 
-int get_length_length(uint32_t length)
+	PKCS #8. Encoding. https://datatracker.ietf.org/doc/html/rfc5208
+	PrivateKeyInfo ::= SEQUENCE {
+		version                   Version,
+		privateKeyAlgorithm       PrivateKeyAlgorithmIdentifier,
+		privateKey                PrivateKey,
+	}
+	Version ::= INTEGER (0)
+	PrivateKeyAlgorithmIdentifier ::= AlgorithmIdentifier
+	PrivateKey ::= OCTET STRING (RSAPrivateKey)
+
+
+	PKCS #1. https://datatracker.ietf.org/doc/html/rfc3447#section-3.1. RSA Private key.
+	RSAPrivateKey ::= SEQUENCE {
+		version           Version,
+		modulus           INTEGER,  -- n
+		publicExponent    INTEGER,  -- e
+		privateExponent   INTEGER,  -- d
+		prime1            INTEGER,  -- p
+		prime2            INTEGER,  -- q
+		exponent1         INTEGER,  -- d mod (p-1)
+		exponent2         INTEGER,  -- d mod (q-1)
+		coefficient       INTEGER,  -- (inverse of q) mod p
+	}
+	Version ::= INTEGER (0)
+
+
+	x.509 Private Key Algorithm Identifier. https://datatracker.ietf.org/doc/html/rfc5280
+	AlgorithmIdentifier  ::=  SEQUENCE  {
+		algorithm               OBJECT IDENTIFIER,
+		parameters              ANY DEFINED BY algorithm OPTIONAL
+	}
+	parameters = NULL (0x05 0x00)
+
+	https://datatracker.ietf.org/doc/html/rfc4055:
+    rsaEncryption  OBJECT IDENTIFIER  ::=  { pkcs-1 1 }
+
+	https://datatracker.ietf.org/doc/html/rfc3279#section-2.3.1:
+	pkcs-1 OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840)
+                     rsadsi(113549) pkcs(1) 1 }
+
+*/
+
+/*
+	Length management
+*/
+
+
+static int get_length_length(uint32_t length)
 {
 	uint32_t length_length;
 	uint32_t bit_count;
@@ -19,7 +62,7 @@ int get_length_length(uint32_t length)
 	return length_length;
 }
 
-int get_integer_der_length_from_bigint(BIGNUM *num)
+static int get_integer_der_length_from_bigint(BIGNUM *num)
 {
 	uint32_t length;
  	int leading_one;
@@ -34,26 +77,19 @@ int get_integer_der_length_from_bigint(BIGNUM *num)
 	return length;
 }
 
-int get_rsa_oid_length()
+// The OID itself is 9 octets, add length and oid
+static int get_rsa_oid_length()
 {
-	uint32_t length;
-
-	length = 9; // The OID itself is 9 octets
-	length += 2; // Length and oid tag
-	return length;
+	return 11; 
 }
 
-int get_rsa_identifier_length()
+// TAG + Length + NULL (2) + OID
+static int get_rsa_identifier_length()
 {
-	uint32_t length;
-
-	length = 2; // Null parameter is two octets
-	length += get_rsa_oid_length();
-	length += 2; // Length octets (<127 = 1) and sequence tag
-	return length;
+	return 2 + get_rsa_oid_length() + 2;
 }
 
-int get_pkey_sequence_data_length(struct s_private_key *key)
+static int get_pkey_sequence_data_length(struct s_private_key *key)
 {
 	uint32_t length;
 
@@ -69,7 +105,7 @@ int get_pkey_sequence_data_length(struct s_private_key *key)
 	return length;
 }
 
-int get_pkey_sequence_length(struct s_private_key *key)
+static int get_pkey_sequence_length(struct s_private_key *key)
 {
 	uint32_t length;
 
@@ -79,12 +115,12 @@ int get_pkey_sequence_length(struct s_private_key *key)
 }
 
 
-int get_pkey_octetstring_data_length(struct s_private_key *key)
+static int get_pkey_octetstring_data_length(struct s_private_key *key)
 {
 	return get_pkey_sequence_length(key);;
 }
 
-int get_pkey_octetstring_length(struct s_private_key *key)
+static int get_pkey_octetstring_length(struct s_private_key *key)
 {
 	uint32_t length;
 
@@ -93,7 +129,7 @@ int get_pkey_octetstring_length(struct s_private_key *key)
 	return length;
 }
 
-void encode_length(uint32_t *copied_octets, uint8_t *dst, uint32_t length)
+static void encode_length(uint32_t *copied_octets, uint8_t *dst, uint32_t length)
 {
 	uint32_t length_length;
 	uint32_t bit_count;
@@ -114,13 +150,18 @@ void encode_length(uint32_t *copied_octets, uint8_t *dst, uint32_t length)
 }
 
 
-void encode_small_tag(uint32_t *copied_octets, uint8_t *dst, uint8_t tag)
+
+/*
+	Encoding values
+*/
+
+static void encode_small_tag(uint32_t *copied_octets, uint8_t *dst, uint8_t tag)
 {
 	*dst = tag;
 	(*copied_octets) ++;
 }
 
-void encode_small_integer(uint32_t *copied_octets, uint8_t *dst, uint8_t integer)
+static void encode_small_integer(uint32_t *copied_octets, uint8_t *dst, uint8_t integer)
 {
 	encode_small_tag(copied_octets, dst, DER_INTEGER);
 	encode_length(copied_octets, dst + 1, 1);
@@ -128,13 +169,13 @@ void encode_small_integer(uint32_t *copied_octets, uint8_t *dst, uint8_t integer
 	(*copied_octets) ++;
 }
 
-void encode_null(uint32_t *copied_octets, uint8_t *dst)
+static void encode_null(uint32_t *copied_octets, uint8_t *dst)
 {
 	encode_small_tag(copied_octets, dst, DER_NULL);
 	encode_length(copied_octets, dst + 1, 0);
 }
 
-void encode_bigint(uint32_t *copied_octets, uint8_t *dst, BIGNUM *num)
+static void encode_bigint(uint32_t *copied_octets, uint8_t *dst, BIGNUM *num)
 {
 	int leading_one;
 	uint32_t bigint_copied_octets;
@@ -161,7 +202,7 @@ void encode_bigint(uint32_t *copied_octets, uint8_t *dst, BIGNUM *num)
 }
 
 
-void encode_pkey_octetstring(uint32_t *copied_octets, uint8_t *dst, struct s_private_key *key)
+static void encode_pkey_octetstring(uint32_t *copied_octets, uint8_t *dst, struct s_private_key *key)
 {
 	uint32_t octetstring_copied_octets;
 
@@ -184,7 +225,7 @@ void encode_pkey_octetstring(uint32_t *copied_octets, uint8_t *dst, struct s_pri
 	(*copied_octets) += octetstring_copied_octets;
 }
 
-void encode_rsa_identifier(uint32_t *copied_octets, uint8_t *dst)
+static void encode_rsa_identifier(uint32_t *copied_octets, uint8_t *dst)
 {
 	uint32_t copied_identifier_octets;
 	uint8_t identifier[9] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01};

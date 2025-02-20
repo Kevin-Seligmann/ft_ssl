@@ -10,6 +10,14 @@
 # define GENRSA_PUBLIC_EXPONENT 0x10001
 # define IS_EVEN(x) ((x & 0x1) == 0)
 
+#define PKCS8_PRIV_KEY_BEGIN "-----BEGIN PRIVATE KEY-----\n"
+#define PKCS8_PRIV_KEY_END "-----END PRIVATE KEY-----\n"
+
+# define DER_INTEGER 0x02
+# define DER_OCTETSTRING 0x04
+# define DER_SEQUENCE 0x30
+# define DER_NULL 0x05
+# define DER_OID 0x06
 
 # define ENCODE_RSA_PRIV_KEY 1
 
