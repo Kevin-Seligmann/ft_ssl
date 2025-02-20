@@ -156,7 +156,6 @@ int parse_flags(struct s_command *command, int *ind, char **argv)
 				return opt->get_argument(command, ind, argv);
 			if (opt->get_argument(command, ind, argv) == FT_SSL_FATAL_ERR)
 				return FT_SSL_FATAL_ERR;
-			break ;
 		}
 		(*ind) ++;
 	}

@@ -7,7 +7,7 @@ static char *get_str_argument(struct s_command *command, int *ind, char **argv)
 
 	if (!argv[(*ind) + 1])
 	{
-		write_error2("Argument required for option", argv[(*ind) + 1]);
+		write_error2("Argument required for option", argv[*ind] + 1);
 		return NULL;
 	}
 	argument = argv[(*ind) + 1];
@@ -29,7 +29,6 @@ int get_input_file_argument(struct s_command *command, int *ind, char **argv)
 
 	argument = get_str_argument(command, ind, argv);
 	return set_argument(argument, &command->input_file);
-
 }
 
 int get_output_file_argument(struct s_command *command, int *ind, char **argv)

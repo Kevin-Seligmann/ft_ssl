@@ -81,23 +81,7 @@ static int generate_rsa_pkey(struct s_private_key *pkey, int rand_fd)
 // GENRSA Command
 static int initialize_genrsa_command(struct s_command *command, struct s_genrsa_command *genrsa)
 {
-	genrsa->fd_rand = open("/dev/urandom", O_RDONLY);
-	if (genrsa->fd_rand < 0)
-	{
-		write_error2("Opening /dev/urandom", strerror(errno));
-		return FT_SSL_FATAL_ERR;
-	}
-	if (command->flags & FLAG_OUTPUTFILE)
-	{
-		genrsa->fd_out = open(command->output_file, O_WRONLY);
-		if (genrsa->fd_out < 0)
-		{
-			write_error3("Opening file", command->output_file, strerror(errno));
-			return FT_SSL_FATAL_ERR;
-		}
-	}
-	else 
-		genrsa->fd_out = STDOUT_FILENO;
+
 	genrsa->pkey.version = 0;
 	genrsa->pkey.modulus = BN_new();
 	genrsa->pkey.public_exponent = BN_new();
@@ -120,6 +104,25 @@ static int initialize_genrsa_command(struct s_command *command, struct s_genrsa_
 		write_error("Memory error");
 		return FT_SSL_FATAL_ERR;
 	}
+
+	genrsa->fd_rand = open("/dev/urandom", O_RDONLY);
+	if (genrsa->fd_rand < 0)
+	{
+		write_error2("Opening /dev/urandom", strerror(errno));
+		return FT_SSL_FATAL_ERR;
+	}
+	if (command->flags & FLAG_OUTPUTFILE)
+	{
+		genrsa->fd_out = open(command->output_file,  O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (genrsa->fd_out < 0)
+		{
+			write_error3("Opening file", command->output_file, strerror(errno));
+			return FT_SSL_FATAL_ERR;
+		}
+	}
+	else 
+		genrsa->fd_out = STDOUT_FILENO;
+
 	return FT_SSL_SUCCESS;
 }
 
