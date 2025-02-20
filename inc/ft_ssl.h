@@ -56,6 +56,7 @@
 # define FLAG_MODULUS 0x2000
 # define FLAG_CHECK 0x4000
 # define FLAG_POBOUT 0x8000
+# define FLAG_TRADITIONAL 0x10000
 
 // rsautl flags
 # define FLAG_HEXDUMP 0x1

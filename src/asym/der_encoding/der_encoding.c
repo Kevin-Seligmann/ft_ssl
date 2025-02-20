@@ -201,18 +201,13 @@ static void encode_bigint(uint32_t *copied_octets, uint8_t *dst, BIGNUM *num)
 	(*copied_octets) += bigint_copied_octets;
 }
 
-
-static void encode_pkey_octetstring(uint32_t *copied_octets, uint8_t *dst, struct s_private_key *key)
+static void encode_pkey_sequence(uint32_t *copied_octets, uint8_t *dst, struct s_private_key *key)
 {
 	uint32_t octetstring_copied_octets;
 
 	octetstring_copied_octets = 0;
-	encode_small_tag(&octetstring_copied_octets, dst, DER_OCTETSTRING);
-	encode_length(&octetstring_copied_octets, dst + octetstring_copied_octets,  get_pkey_octetstring_data_length(key));
-
 	encode_small_tag(&octetstring_copied_octets, dst + octetstring_copied_octets, DER_SEQUENCE);
 	encode_length(&octetstring_copied_octets, dst + octetstring_copied_octets,  get_pkey_sequence_data_length(key));
-
 	encode_small_integer(&octetstring_copied_octets, dst + octetstring_copied_octets, key->version);
 	encode_bigint(&octetstring_copied_octets, dst + octetstring_copied_octets, key->modulus);
 	encode_bigint(&octetstring_copied_octets, dst + octetstring_copied_octets, key->public_exponent);
@@ -222,6 +217,17 @@ static void encode_pkey_octetstring(uint32_t *copied_octets, uint8_t *dst, struc
 	encode_bigint(&octetstring_copied_octets, dst + octetstring_copied_octets, key->exponent_1);
 	encode_bigint(&octetstring_copied_octets, dst + octetstring_copied_octets, key->exponent_2);
 	encode_bigint(&octetstring_copied_octets, dst + octetstring_copied_octets, key->coefficient);
+	(*copied_octets) += octetstring_copied_octets;
+}
+
+static void encode_pkey_octetstring(uint32_t *copied_octets, uint8_t *dst, struct s_private_key *key)
+{
+	uint32_t octetstring_copied_octets;
+
+	octetstring_copied_octets = 0;
+	encode_small_tag(&octetstring_copied_octets, dst, DER_OCTETSTRING);
+	encode_length(&octetstring_copied_octets, dst + octetstring_copied_octets,  get_pkey_octetstring_data_length(key));
+	encode_pkey_sequence(&octetstring_copied_octets, dst + octetstring_copied_octets, key);
 	(*copied_octets) += octetstring_copied_octets;
 }
 
@@ -242,7 +248,7 @@ static void encode_rsa_identifier(uint32_t *copied_octets, uint8_t *dst)
 	(*copied_octets) += copied_identifier_octets;
 }
 
-int encode_rsa_private_key(uint32_t *length, uint8_t **dst, struct s_private_key *key)
+int encode_rsa_private_key_pkcs8(uint32_t *length, uint8_t **dst, struct s_private_key *key)
 {
 	uint32_t main_sequence_data_length;
 	uint32_t offset;
@@ -266,4 +272,28 @@ int encode_rsa_private_key(uint32_t *length, uint8_t **dst, struct s_private_key
 	encode_pkey_octetstring(&offset, (*dst) + offset, key);
 
 	return FT_SSL_SUCCESS;
+}
+
+int encode_rsa_private_key_pkcs1(uint32_t *length, uint8_t **dst, struct s_private_key *key)
+{
+	uint32_t offset;
+
+	// Length
+	*length = get_pkey_sequence_length(key);
+	*dst = malloc(*length);
+	if (!*dst)
+		return FT_SSL_FATAL_ERR;
+
+	// Copy data ...
+	offset = 0;
+	encode_pkey_sequence(&offset, *dst, key);
+	return FT_SSL_SUCCESS;
+}
+
+int encode_rsa_private_key(uint32_t *length, uint8_t **dst, struct s_private_key *key, int pkcs1)
+{
+	if (pkcs1)
+		return encode_rsa_private_key_pkcs1(length, dst, key);
+	else
+		return encode_rsa_private_key_pkcs8(length, dst, key);
 }

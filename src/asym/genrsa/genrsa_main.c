@@ -158,7 +158,7 @@ int genrsa_command(struct s_command *command, int ind, char **argv)
 		write_error("Memory error generating private key");
 		return exit_genrsa_command(&genrsa, FT_SSL_FATAL_ERR);
 	}
-	if (output_private_key(&genrsa) == FT_SSL_FATAL_ERR)
+	if (output_private_key(&genrsa, command->flags && FLAG_TRADITIONAL) == FT_SSL_FATAL_ERR)
 		return exit_genrsa_command(&genrsa, FT_SSL_FATAL_ERR);
 	return exit_genrsa_command(&genrsa, FT_SSL_SUCCESS);
 }

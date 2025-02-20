@@ -49,6 +49,7 @@ static struct s_flag_option crypt_options[] =
 static struct s_flag_option genrsa_options[] = 
 {
 	{"out", FLAG_OUTPUTFILE, COMM_TYPE_GENRSA, 1, get_output_file_argument, "Output file"},
+	{"traditional", FLAG_TRADITIONAL, COMM_TYPE_RSA, 0, 0, ""},
 	{0, 0, 0, 0, NULL, NULL},
 };
 

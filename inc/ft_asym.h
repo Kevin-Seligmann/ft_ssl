@@ -13,6 +13,9 @@
 #define PKCS8_PRIV_KEY_BEGIN "-----BEGIN PRIVATE KEY-----\n"
 #define PKCS8_PRIV_KEY_END "-----END PRIVATE KEY-----\n"
 
+#define PKCS1_PRIV_KEY_BEGIN "-----BEGIN RSA PRIVATE KEY-----\n"
+#define PKCS1_PRIV_KEY_END "-----END RSA PRIVATE KEY-----\n"
+
 # define DER_INTEGER 0x02
 # define DER_OCTETSTRING 0x04
 # define DER_SEQUENCE 0x30
@@ -47,9 +50,9 @@ int breakit_command(struct s_command *command, int ind, char **argv);
 int extractkey_command(struct s_command *command, int ind, char **argv);
 
 int gen_prime(BIGNUM **prime, int rand_fd);
-int output_private_key(struct s_genrsa_command *genrsa);
+int output_private_key(struct s_genrsa_command *genrsa, int pkcs1);
 
-int encode_rsa_private_key(uint32_t *length, uint8_t **dst, struct s_private_key *key);
+int encode_rsa_private_key(uint32_t *length, uint8_t **dst, struct s_private_key *key, int pkcs1);
 
 #endif
 	
