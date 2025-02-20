@@ -49,6 +49,7 @@ static int generate_rsa_pkey(struct s_private_key *pkey, int rand_fd)
 	pkey->private_exponent = BN_new();
 	pkey->exponent_1 = BN_new();
 	pkey->exponent_2 = BN_new();
+	pkey->coefficient = BN_new();
 	ctx = BN_CTX_new();
 
 	// Gen prime 1.

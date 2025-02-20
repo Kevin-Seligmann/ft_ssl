@@ -64,16 +64,32 @@ struct integer_sequence
 
 */
 
-int get_pk_sequence(struct s_genrsa_command *genrsa)
-{
-	return FT_SSL_SUCCESS;
-}
+#define PKCS8_PRIV_KEY_BEGIN "-----BEGIN PRIVATE KEY-----\n"
+#define PKCS8_PRIV_KEY_END "-----END PRIVATE KEY-----\n"
 
 int output_private_key(struct s_genrsa_command *genrsa)
 {
-	struct integer_sequence private_key_sequence;
+	uint8_t *der_encoded_key;
+	uint32_t der_encoded_key_length;
+	struct s_encoding base64enc;
 
-	if (get_pk_sequence(genrsa, &private_key_sequence) == FT_SSL_FATAL_ERR)
-		return FT_SSL_FATAL_ERR;
+	encode_rsa_private_key(&der_encoded_key_length, &der_encoded_key, &genrsa->pkey);
+
+	base64enc.flags = FLAG_ENCODE;
+	base64enc.input = (char *) der_encoded_key;
+	base64enc.input_size = der_encoded_key_length;
+	encoding_base64(&base64enc);
+
+	write(STDOUT_FILENO, PKCS8_PRIV_KEY_BEGIN, ft_strlen(PKCS8_PRIV_KEY_BEGIN));
+	for (size_t printed_bytes = 0; printed_bytes < base64enc.output_size; printed_bytes += 64)
+	{
+		if (base64enc.output_size > 64 + printed_bytes)
+			write (STDOUT_FILENO, base64enc.output + printed_bytes, 64);
+		else
+			write (STDOUT_FILENO, base64enc.output + printed_bytes,base64enc.output_size - printed_bytes);
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	}
+	write(STDOUT_FILENO, PKCS8_PRIV_KEY_END, ft_strlen(PKCS8_PRIV_KEY_END));
+
 	return FT_SSL_SUCCESS;	
 }

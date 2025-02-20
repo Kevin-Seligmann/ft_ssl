@@ -1,5 +1,6 @@
 VPATH = src src/utils src/hash src/encryption src/encoding src/parse src/encryption/algorithms \
-	src/asym/extractkey src/asym/gendsa src/asym/genrsa src/asym/rsa src/asym/rsautl src/asym/breakit
+	src/asym/extractkey src/asym/gendsa src/asym/genrsa src/asym/rsa src/asym/rsautl src/asym/breakit \
+	src/asym/der_encoding
 
 OBJ_MAIN =  main.o parse.o write_errors.o parse_flags.o parse_arg_getter.o
 
@@ -17,7 +18,7 @@ OBJ_CRYPT = encrypt_getkey.o encrypt_getsalt.o encrypt_main.o encrypt_utils.o en
 			encrypt_output.o
 
 OBJ_ASYM = breakit_main.o extractkey_main.o gendsa_main.o genrsa_main.o rsa_main.o rsautl_main.o \
-			genrsa_prime.o genrsa_output.o
+			genrsa_prime.o genrsa_output.o der_encoding.o
 
 # Files
 OBJ = $(OBJ_MAIN) $(OBJ_LIB) $(OBJ_HASH) $(OBJ_ENCODING) $(OBJ_CRYPT) $(OBJ_ASYM)

@@ -36,4 +36,5 @@ int encoding_command(struct s_command *command, int ind, char **argv);
 int encoding_base64(void *data);
 
 
+
 #endif
