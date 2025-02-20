@@ -4,4 +4,4 @@
 ft_ssl
 .vscode/*
 .vscode
-
+*.pem

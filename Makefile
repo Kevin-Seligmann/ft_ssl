@@ -2,7 +2,7 @@ VPATH = src src/utils src/hash src/encryption src/encoding src/parse src/encrypt
 	src/asym/extractkey src/asym/gendsa src/asym/genrsa src/asym/rsa src/asym/rsautl src/asym/breakit \
 	src/asym/der_encoding
 
-OBJ_MAIN =  main.o parse.o write_errors.o parse_flags.o parse_arg_getter.o
+OBJ_MAIN =  main.o parse.o write_errors.o parse_flags.o parse_arg_getter.o write_userinfo.o
 
 OBJ_LIB = ft_putstr_fd.o ft_str_toupper.o ft_strcmp.o ft_toupper.o ft_strlen.o \
 			ft_putchar_fd.o ft_strdup.o ft_strjoin.o ft_read_file.o ft_memset.o ft_memcpy.o \

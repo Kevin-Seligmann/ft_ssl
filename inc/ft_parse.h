@@ -24,5 +24,6 @@ int get_passin_argument(struct s_command *command, int *ind, char **argv);
 int get_passout_argument(struct s_command *command, int *ind, char **argv);
 int get_keysize_argument(struct s_command *command, int *ind, char **argv);
 int get_algo_argument(struct s_command *command, int *ind, char **argv);
+void 	print_help();
 
 #endif

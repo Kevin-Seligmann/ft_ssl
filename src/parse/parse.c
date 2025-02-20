@@ -73,8 +73,15 @@ int parse(struct s_command *command, int *ind, char **argv)
 		write_error("Invalid number of arguments");
 		return FT_SSL_FATAL_ERR;
 	}
+	ft_str_toupper(argv[1]);
+	if (!ft_strcmp(argv[1], "HELP"))
+	{
+		print_help();
+		exit (EXIT_SUCCESS);
+	}
 	if (get_command_type(&(command->meta_info), argv[1]) == FT_SSL_FATAL_ERR){
 		write_error2("Unrecognized command", argv[1]);
+		ft_putstr_fd("Try 'help' for more information.\n", STDOUT_FILENO);
 		return (FT_SSL_FATAL_ERR);
 	}
 	*ind = 2; // After command
