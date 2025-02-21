@@ -5,7 +5,7 @@
 
 # include <openssl/bn.h>
 
-# define KEY_BIT_SIZE 1024
+# define KEY_BIT_SIZE 64
 # define GENRSA_PRIMALITY_ACCURACY 0.99999999999
 # define GENRSA_PUBLIC_EXPONENT 0x10001
 # define IS_EVEN(x) ((x & 0x1) == 0)

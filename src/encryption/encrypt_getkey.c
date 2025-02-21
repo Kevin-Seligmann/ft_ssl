@@ -49,7 +49,7 @@ static int get_key_from_pbkfd1(struct s_encryption *data, char *password)
 		return FT_SSL_FATAL_ERR;
 	}
 	ft_memcpy(message, password, pass_length);
-	ft_memcpy(message + pass_length, data->ksiv_buffer + data->salt_length, data->salt_length);
+	ft_memcpy(message + pass_length, data->ksiv_buffer + data->key_length, data->salt_length);
 	message[total_length] = 0;
 	ret = get_key_from_md5(data->ksiv_buffer, data->key_length, message);
 	free(message);

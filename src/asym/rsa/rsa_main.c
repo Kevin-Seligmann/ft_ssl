@@ -21,6 +21,5 @@
 
 	PUBOUT Output a public key instead of a private key
 
-
 */
 int rsa_command(struct s_command *command, int ind, char **argv){return FT_SSL_FATAL_ERR;}

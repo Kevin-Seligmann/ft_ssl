@@ -43,6 +43,7 @@ static struct s_flag_option crypt_options[] =
 	{"p", FLAG_PASSWORD, COMM_TYPE_ENCRYPT, 1, get_crypt_pass_argument, "Next argument is password in ASCII"},
 	{"s", FLAG_SALT, COMM_TYPE_ENCRYPT, 1, get_crypt_salt_argument, "Targument is salt in hex"},
 	{"v", FLAG_VECTOR, COMM_TYPE_ENCRYPT, 1, get_crypt_vector_argument, "Next argument is initialization vector in hex"},
+	{"debug", FLAG_DEBUG, COMM_TYPE_ENCRYPT, 0, 0, "Show key, salt and vector"},
 	{0, 0, 0, 0, NULL, NULL},
 };
 

@@ -37,6 +37,7 @@
 # define FLAG_PASSWORD 0x40
 # define FLAG_SALT 0x80 
 # define FLAG_VECTOR 0x100
+# define FLAG_DEBUG 0x200
 
 // Hash command flags
 # define HASH_FLAG_APPEND 0x01

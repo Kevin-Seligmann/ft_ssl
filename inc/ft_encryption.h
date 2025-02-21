@@ -80,6 +80,7 @@ int is_hexa(char *str, size_t size);
 uint64_t stohex(char *str);
 void process_block(uint64_t input, uint64_t *output, uint64_t keys[DES_ROUND_COUNT], int mode);
 void generate_key_schedule(uint64_t *key, uint64_t keys[DES_ROUND_COUNT]);
+int print_debug_info(struct s_command *command, struct s_encryption *data);
 
 // Encryption functions
 int encryption_command(struct s_command *command, int ind, char **argv);

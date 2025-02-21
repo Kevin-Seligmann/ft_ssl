@@ -75,6 +75,11 @@ int encryption_command(struct s_command *command, int ind, char **argv)
 		return free_encryption_command_w_ret(&data, FT_SSL_FATAL_ERR);
 	if (get_initialization_vector(command, &data) == FT_SSL_FATAL_ERR)
 		return free_encryption_command_w_ret(&data, FT_SSL_FATAL_ERR);
+	if (command->flags & FLAG_DEBUG)
+	{
+		ret = print_debug_info(command, &data);
+		return free_encryption_command_w_ret(&data, ret);
+	}
 	if (get_text_to_transform(command, &data) == FT_SSL_FATAL_ERR) // Source malloc'd.
 		return free_encryption_command_w_ret(&data, FT_SSL_FATAL_ERR);
 	if (command->flags & FLAG_BASE64_ENCRYPTION && command->flags & FLAG_DECODE)
