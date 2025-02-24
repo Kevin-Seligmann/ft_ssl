@@ -12,6 +12,10 @@ Work in progress.
 #### Types: DES, EDE and EDE3
 #### Cipher block mode: ECB, CBC, PCBC, FCB, OFB, CTR
 
+### Asymmetric encription
+
+- genrsa
+
 ## Flags
 
 ### Hashing
